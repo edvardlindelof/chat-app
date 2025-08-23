@@ -1,12 +1,14 @@
+from os import environ
 from typing import Iterable
 from openai import OpenAI
 from openai.types.chat import ChatCompletionMessageParam
 
 
 client = OpenAI(
-    base_url='http://localhost:11434/v1',
-    api_key='ollama',  # required but unused
+    base_url=environ["LLM_BASE_URL"],
+    api_key=environ["LLM_API_KEY"],
 )
+model = environ["LLM_MODEL"]
 
 def stream(messages: Iterable[ChatCompletionMessageParam] = []) -> Iterable[str]:
     if not messages:
@@ -14,7 +16,7 @@ def stream(messages: Iterable[ChatCompletionMessageParam] = []) -> Iterable[str]
         return
     system_message = "You are a concise communicator but also a metal head who loves ozzy osbourne"
     response_chunks = client.chat.completions.create(
-        model="llama3.2:3b",
+        model=model,
         stream=True,
         messages=[{"role": "system", "content": system_message}, *messages],
     )
