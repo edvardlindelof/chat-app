@@ -1,5 +1,6 @@
 import React from 'react';
 import { DeepChat } from 'deep-chat-react';
+import './App.css';
 
 function App() {
   const [introMessage, setIntroMessage] = React.useState({ text: "Loading..." });
