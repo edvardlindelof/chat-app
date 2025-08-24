@@ -29,7 +29,10 @@ async def chat(request: Request):
         }
         for m in aisdk_formatted_messages
     ]
-    openai_response_stream = stream(openai_formatted_messages)
+    if (await request.json()).get("first"):  # TODO delegate control to chat.py
+        openai_response_stream = stream([])
+    else:
+        openai_response_stream = stream(openai_formatted_messages)
     def aisdk_formatted_response_stream():
         # TODO consider following the protocol more closely
         # https://ai-sdk.dev/docs/ai-sdk-ui/stream-protocol?utm_source=chatgpt.com#data-stream-protocol

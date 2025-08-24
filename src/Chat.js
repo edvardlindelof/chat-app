@@ -1,47 +1,18 @@
 import React from 'react';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
-import { useState } from 'react';
+
 
 export default function Chat() {
-  const { messages, sendMessage, status, setMessages } = useChat({
+  const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({api: '/api/chat'}),
   });
-  const [input, setInput] = useState('');
-
-  // TODO send a first message with some flag in the sendMessage "data" option,
-  // to clean this mess up
+  const [input, setInput] = React.useState('');
 
   React.useEffect(() => {
-    fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: [] })
-    })
-      .then(res => res.text())
-      .then(streamData => {
-        return streamData
-          .split('\n\n')
-          .filter(chunk => chunk)  // remove ""
-          .map(chunk => chunk.replace('data: ', ''))
-          .map(JSON.parse);
-      })
-      .then(events =>
-        [
-          {
-            id: events[0].id,
-            role: "assistant",
-            parts: [
-              {
-                type: "text",
-                text: events.slice(1).map(e => e.delta).join('')
-              }
-            ]
-          }
-        ]
-      )
-      .then(setMessages)
-      .then(res => console.log(res))
+    sendMessage(
+      { text: "" }, { body: { first: true } }
+    );
   }, []);
 
   return (
