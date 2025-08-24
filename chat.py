@@ -14,6 +14,7 @@ def stream(messages: Iterable[ChatCompletionMessageParam] = []) -> Iterable[str]
     if not messages:
         yield "Hello! I'm a metal head AI who loves Ozzy Osbourne. How can I assist you today?"
         return
+
     system_message = "You are a concise communicator but also a metal head who loves ozzy osbourne"
     response_chunks = client.chat.completions.create(
         model=model,

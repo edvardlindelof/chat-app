@@ -18,24 +18,27 @@ async def chat_no_stream():
 
 @app.post("/api/chat")
 async def chat(request: Request):
-    deepchat_formatted_messages = (await request.json())["messages"]
+    # TODO investigate frontend/backend data contracts,
+    # start with https://fastapi.tiangolo.com/advanced/generate-clients/
+    aisdk_formatted_messages = (await request.json())["messages"]
     openai_formatted_messages = [
-        {"role": "assistant" if m["role"] == "ai" else m["role"], "content": m["text"]}
-        for m in deepchat_formatted_messages
+        # TODO consider supporting other part types than "text"
+        {
+            "role": m["role"],
+            "content": next(p["text"] for p in m["parts"] if p["type"] == "text"),
+        }
+        for m in aisdk_formatted_messages
     ]
+    openai_response_stream = stream(openai_formatted_messages)
+    def aisdk_formatted_response_stream():
+        # TODO consider following the protocol more closely
+        # https://ai-sdk.dev/docs/ai-sdk-ui/stream-protocol?utm_source=chatgpt.com#data-stream-protocol
+        yield f'data: {json.dumps({"type": "text-start", "id": "msg_123"})}\n\n'
+        for chunk in openai_response_stream:
+            yield f'data: {json.dumps({"type": "text-delta", "id": "msg_123", "delta": chunk})}\n\n'
+
     return StreamingResponse(
-        (
-            f"data: {json.dumps({'text': f'{chunk}'})}\n\n"
-            for chunk in stream(openai_formatted_messages)
-        ),
-        # TODO understand if media_type and headers are needed
-        # media_type="text/event-stream"),
-        # headers={
-        #     "Content-Type": "text/event-stream",
-        #     "Cache-Control": "no-cache",
-        #     "Connection": "keep-alive",
-        #     "Access-Control-Allow-Origin": "*",
-        # },
+        aisdk_formatted_response_stream(), headers={"x-vercel-ai-ui-message-stream": "v1"},
     )
 
 app.mount("/", StaticFiles(directory="dist", html=True), name="static")
