@@ -7,7 +7,7 @@ export default function Chat() {
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({api: '/api/chat'}),
   });
-  const [input, setInput] = React.useState('');
+  const [input, setInput] = React.useState<string>('');
 
   React.useEffect(() => {
     sendMessage(
@@ -26,7 +26,7 @@ export default function Chat() {
         </div>
       ))}
       <form
-        onSubmit={(e) => {
+        onSubmit={(e: React.FormEvent) => {
           e.preventDefault();
           if (input.trim()) {
             sendMessage({ text: input });
@@ -36,7 +36,7 @@ export default function Chat() {
       >
         <input
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value)}
           disabled={status !== 'ready'}
           placeholder="Say something..."
         />
