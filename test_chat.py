@@ -1,3 +1,4 @@
+import pytest
 from os import environ
 from deepeval import assert_test
 from deepeval.metrics import GEval
@@ -5,6 +6,9 @@ from deepeval.models import GPTModel
 from deepeval.test_case import LLMTestCase, LLMTestCaseParams
 
 from chat import stream
+
+
+pytest_plugins = ("pytest_asyncio",)
 
 
 factual_faithulness = GEval(
@@ -25,10 +29,11 @@ factual_faithulness = GEval(
     ),
 )
 
-def test_beurre_monte_knowledge():
+@pytest.mark.asyncio
+async def test_beurre_monte_knowledge():
     """Chatbot should understand that beurre monté is the silky thing."""
     chat_input = "What do you think of beurre monte??"
-    chat_output = ''.join(stream([{"role": "user", "content": chat_input}]))
+    chat_output = ''.join([chunk async for chunk in stream([{"role": "user", "content": chat_input}])])
     assert_test(
         LLMTestCase(
             input=chat_input,

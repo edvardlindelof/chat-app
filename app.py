@@ -33,11 +33,11 @@ async def chat(request: Request):
         openai_response_stream = stream([])
     else:
         openai_response_stream = stream(openai_formatted_messages)
-    def aisdk_formatted_response_stream():
+    async def aisdk_formatted_response_stream():
         # TODO consider following the protocol more closely
         # https://ai-sdk.dev/docs/ai-sdk-ui/stream-protocol?utm_source=chatgpt.com#data-stream-protocol
         yield f'data: {json.dumps({"type": "text-start", "id": "msg_123"})}\n\n'
-        for chunk in openai_response_stream:
+        async for chunk in openai_response_stream:
             yield f'data: {json.dumps({"type": "text-delta", "id": "msg_123", "delta": chunk})}\n\n'
 
     return StreamingResponse(
