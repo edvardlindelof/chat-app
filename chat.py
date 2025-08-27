@@ -1,4 +1,5 @@
 from os import environ
+import random
 from typing import Iterable, AsyncIterable
 from openai.types.chat import ChatCompletionMessageParam
 from pydantic_ai import Agent
@@ -17,6 +18,13 @@ agent = Agent(
     ),
     system_prompt="You are a concise communicator but also a metal head who loves ozzy osbourne"
 )
+
+@agent.tool_plain
+def get_the_best_cheese() -> str:
+    if random.random() < 0.5:
+        return "Gruyere"
+    else:
+        return "Comte"
 
 conversation_history: list[ModelMessage] = []
 
