@@ -16,7 +16,7 @@ factual_faithulness = GEval(
     evaluation_params=[LLMTestCaseParams.ACTUAL_OUTPUT, LLMTestCaseParams.RETRIEVAL_CONTEXT],
     evaluation_steps=[
         "Extract claims from the actual output.",
-        "Verify each medical claim against statements in retrieved contextual information.",
+        "Verify each claim against statements in retrieved contextual information.",
         "Identify any contradictions between claims in the output and claims in the contextual information.",
         "Heavily penalize hallucinations.",
         "Provide reasons for the faithfulness score."
