@@ -33,7 +33,7 @@ factual_faithulness = GEval(
 async def test_beurre_monte_knowledge():
     """Chatbot should understand that beurre monté is the silky thing."""
     chat_input = "What do you think of beurre monte??"
-    chat_output = ''.join([chunk async for chunk in stream([{"role": "user", "content": chat_input}])])
+    chat_output = ''.join([chunk async for chunk in stream(chat_input)])
     assert_test(
         LLMTestCase(
             input=chat_input,

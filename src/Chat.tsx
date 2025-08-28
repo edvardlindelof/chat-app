@@ -11,9 +11,7 @@ export default function Chat() {
   const [input, setInput] = React.useState<string>('');
 
   React.useEffect(() => {
-    sendMessage(
-      { text: "" }, { body: { first: true } }
-    );
+    sendMessage({ text: "" });
   }, []);
 
   return (

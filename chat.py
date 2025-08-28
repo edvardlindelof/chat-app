@@ -1,7 +1,6 @@
 from os import environ
 import random
-from typing import Iterable, AsyncIterable
-from openai.types.chat import ChatCompletionMessageParam
+from typing import AsyncIterable
 from pydantic_ai import Agent
 from pydantic_ai.messages import ModelMessage
 from pydantic_ai.models.openai import OpenAIChatModel
@@ -28,16 +27,14 @@ def get_the_best_cheese() -> str:
 
 conversation_history: list[ModelMessage] = []
 
-async def stream(messages: Iterable[ChatCompletionMessageParam] = []) -> AsyncIterable[str]:
+async def stream(last_user_message: str) -> AsyncIterable[str]:
     # TODO either refactor to pass in convo history from frontend, or
     # to save it in something like a database
     global conversation_history
 
-    if not messages:
+    if not last_user_message:
         yield "Hello! I'm a metal head AI who loves Ozzy Osbourne. How can I assist you today?"
         return
-
-    *_, last_user_message = (m.get("content", "") for m in messages if m.get("role") == "user")
 
     async with agent.run_stream(last_user_message, message_history=conversation_history) as result:
         async for text in result.stream_text(delta=True):
